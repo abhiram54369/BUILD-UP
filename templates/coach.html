@@ -1,1 +1,48 @@
-{% extends 'base.html' %}{% block title %}Coach — Build Up{% endblock %}{% block content %}<section class="page"><div class="pagehead"><div><div class="eyebrow">Training guidance / based on your logs</div><h1>Coach.</h1><p class="sub">Choose a focus to get practical guidance. This version uses your recorded activity and does not require an external AI API key.</p></div><span class="tag">GUIDANCE MODE</span></div><div class="grid layout2"><section class="card"><h2>What are you working on?</h2><form method="post" class="formgrid"><div class="field full"><label>FOCUS</label><select name="goal"><option value="muscle">Build muscle</option><option value="fat">Fat loss</option><option value="recovery">Recovery and sleep</option><option value="general">General consistency</option></select></div><div class="field full"><button class="btn primary">Generate guidance</button></div></form>{% if answer %}<div style="margin-top:25px;padding:18px;border:1px solid var(--line);border-radius:10px"><div class="eyebrow">Your next step</div><p style="margin:12px 0 0">{{ answer }}</p></div>{% endif %}</section><section class="card"><div class="eyebrow">Principles</div><h2 style="margin-top:12px">Keep the basics repeatable.</h2><div class="list"><div class="listitem"><strong>Progressive overload</strong><div class="muted">Add reps or load gradually while keeping technique solid.</div></div><div class="listitem"><strong>Enough food and protein</strong><div class="muted">Set targets that fit your goal and circumstances.</div></div><div class="listitem"><strong>Sleep and recovery</strong><div class="muted">Make recovery part of the plan, not an afterthought.</div></div><div class="listitem"><strong>Use your logs</strong><div class="muted">Look at trends over several weeks.</div></div></div><p class="muted" style="margin-top:18px">General fitness information only; not medical or individualized clinical advice.</p></section></div></section>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}AI Coach — Build Up{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="pagehead">
+    <div><div class="eyebrow">Build Up intelligence / training assistant</div><h1>AI Coach.</h1><p class="sub">Ask for a workout, equipment walkthrough, home routine, or a practical next step. Your selected equipment shapes the advice.</p></div>
+    <span class="tag">{{ 'AI CONNECTED' if ai_enabled else 'COACH READY' }}</span>
+  </div>
+  <div class="grid layout2">
+    <section class="card">
+      <div class="row"><div><div class="eyebrow">Your training companion</div><h2 style="margin-top:8px">What do you need help with?</h2></div><span class="tag">{{ 'Live AI' if ai_enabled else 'Guided mode' }}</span></div>
+      <div class="coach-hints">
+        <button type="button" class="coach-hint" data-coach-prompt="Build me a 3-day weekly workout plan with exercises, sets, reps and rest times.">Build my weekly plan</button>
+        <button type="button" class="coach-hint" data-coach-prompt="I only have dumbbells at home. Give me a full-body workout and explain the steps for each exercise.">Dumbbells at home</button>
+        <button type="button" class="coach-hint" data-coach-prompt="Explain how to perform a dumbbell Romanian deadlift safely, including setup, movement, breathing and common mistakes.">Explain an exercise</button>
+      </div>
+      {% if history %}
+      <div class="coach-chat" aria-live="polite">
+        {% for item in history %}<div class="coach-bubble {{ 'user' if item.role == 'user' else 'assistant' }}"><strong>{{ 'You' if item.role == 'user' else 'Build Up Coach' }}</strong>{{ item.content }}</div>{% endfor %}
+      </div>
+      {% else %}
+      <div class="coach-bubble assistant"><strong>Build Up Coach</strong>Tell me your goal and what equipment you have. I can help plan home workouts, explain gym equipment step by step, and help you progress safely.</div>
+      {% endif %}
+      <form method="post" class="coach-form" style="margin-top:18px">
+        <div class="formgrid">
+          <div class="field"><label for="coach-goal">YOUR GOAL</label><select id="coach-goal" name="goal"><option>Build muscle</option><option>Lose fat</option><option>Improve fitness</option><option>Maintain</option><option>Improve strength</option></select></div>
+          <div class="field"><label for="coach-level">EXPERIENCE</label><select id="coach-level" name="level"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
+          <div class="field full"><label for="coach-equipment">AVAILABLE EQUIPMENT</label><select id="coach-equipment" name="equipment"><option value="dumbbells">Dumbbells only</option><option value="bodyweight">No equipment / bodyweight</option><option value="gym">Full gym equipment</option><option value="mixed">Dumbbells + bodyweight</option></select></div>
+          <div class="field full"><label for="coach-message">YOUR QUESTION</label><textarea id="coach-message" name="message" maxlength="1200" placeholder="Example: I have 30 minutes and two dumbbells. Give me a beginner home workout with exact steps." required></textarea></div>
+        </div>
+        <div class="actions"><button class="btn primary" type="submit">Ask Coach <span aria-hidden="true">→</span></button></div>
+      </form>
+      <form method="post" action="{{ url_for('clear_coach_history') }}" class="actions"><button class="btn" type="submit">Clear conversation</button></form>
+    </section>
+    <aside class="card">
+      <div class="eyebrow">How the Coach helps</div><h2 style="margin-top:10px">Smart guidance. Clear steps.</h2>
+      <div class="list">
+        <div class="listitem"><strong>Equipment walkthroughs</strong><div class="muted">Setup, posture, movement, breathing and common mistakes.</div></div>
+        <div class="listitem"><strong>Home training</strong><div class="muted">Dumbbell-only and bodyweight routines for limited space.</div></div>
+        <div class="listitem"><strong>Personalized plans</strong><div class="muted">Plans shaped by your goal, experience and recent workout logs.</div></div>
+        <div class="listitem"><strong>Progression</strong><div class="muted">Simple ways to increase reps or load without rushing.</div></div>
+      </div>
+      {% if not ai_enabled %}<div class="flash" style="margin-top:18px">The built-in Coach works now. To enable conversational AI, add an OpenAI API key as an environment variable. Never paste your key into app.py or GitHub.</div>{% endif %}
+      <p class="muted" style="margin-top:18px">The Coach cannot watch your workouts live. Stop if an exercise causes sharp pain and seek qualified medical guidance for concerning symptoms.</p>
+    </aside>
+  </div>
+</section>
+{% endblock %}
