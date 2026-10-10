@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: build-up-fitness
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: DATABASE_PATH
+        value: /var/data/build_up.db
+    disk:
+      name: build-up-data
+      mountPath: /var/data
+      sizeGB: 1

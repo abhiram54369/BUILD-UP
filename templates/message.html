@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block title %}{{ title }} — Build Up{% endblock %}{% block content %}<section class="page"><div class="card"><div class="eyebrow">BUILD UP</div><h1>{{ title }}</h1><p class="sub">{{ message }}</p><a class="btn primary" href="{{ url_for('dashboard') if current_user else url_for('home') }}">Go back</a></div></section>{% endblock %}
